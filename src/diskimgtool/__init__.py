@@ -11,42 +11,44 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from time import sleep
+from typing import Generator, Optional
 
 
-def log():
-    if not hasattr(log, "logger"):
-        log.logger = logging.getLogger(os.path.basename("diskimgtool"))
-    return log.logger
+def _log() -> logging.Logger:
+    if not hasattr(_log, "logger"):
+        setattr(_log, "logger", logging.getLogger(os.path.basename("diskimgtool")))
+    logger: logging.Logger = getattr(_log, "logger")
+    return logger
 
 
-def run(cmd, check=True, capture=False):
-    log().info(f'+ {" ".join(cmd)}')
+def run(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess[bytes]:
+    _log().info(f'+ {" ".join(cmd)}')
     return subprocess.run(cmd, check=check)
 
 
-def run_capture(cmd, check=True, capture=False):
-    log().info(f'+ {" ".join(cmd)}')
+def run_capture(cmd: list[str], check: bool = True) -> str:
+    _log().info(f'+ {" ".join(cmd)}')
     return subprocess.check_output(cmd, encoding="ascii")
 
 
 @contextmanager
-def chdir(path):
-    log().info(f"+ cd {path}")
+def chdir(path: str) -> Generator[None, None, None]:
+    _log().info(f"+ cd {path}")
     cwd = os.getcwd()
     os.chdir(path)
     try:
         yield
     finally:
-        log().info("+ cd -")
+        _log().info("+ cd -")
         os.chdir(cwd)
 
 
 @contextmanager
-def loopback_setup(image):
+def loopback_setup(image: str) -> Generator[str, None, None]:
     data = run_capture(["kpartx", "-a", "-v", image])
     for line in data.split("\n"):
         if line:
-            log().info(f"  {line}")
+            _log().info(f"  {line}")
     try:
         m = re.search(r"add map (loop[0-9]+)p.*", data)
         if not m:
@@ -59,10 +61,16 @@ def loopback_setup(image):
 
 
 @contextmanager
-def mount(src, dst, t="auto", bind=False, args=None):
+def mount(
+    src: str,
+    dst: str,
+    mtype: str = "auto",
+    bind: bool = False,
+    args: Optional[list[str]] = None,
+) -> Generator[None, None, None]:
     if bind:
-        t = "none"
-    c = ["mount", "-t", t]
+        mtype = "none"
+    c = ["mount", "-t", mtype]
     if bind:
         c.extend(["-o", "bind"])
     if args:
@@ -82,25 +90,25 @@ def mount(src, dst, t="auto", bind=False, args=None):
 
 
 @contextmanager
-def root_mounts(rootdir):
-    with mount("dev", f"{rootdir}/dev", t="devtmpfs"):
-        with mount("devpts", f"{rootdir}/dev/pts", t="devpts"):
-            with mount("tmpfs", f"{rootdir}/dev/shm", t="tmpfs"):
-                with mount("proc", f"{rootdir}/proc", t="proc"):
-                    with mount("sysfs", f"{rootdir}/sys", t="sysfs"):
-                        with mount("tmpfs", f"{rootdir}/run", t="tmpfs"):
+def root_mounts(rootdir: str) -> Generator[None, None, None]:
+    with mount("dev", f"{rootdir}/dev", mtype="devtmpfs"):
+        with mount("devpts", f"{rootdir}/dev/pts", mtype="devpts"):
+            with mount("tmpfs", f"{rootdir}/dev/shm", mtype="tmpfs"):
+                with mount("proc", f"{rootdir}/proc", mtype="proc"):
+                    with mount("sysfs", f"{rootdir}/sys", mtype="sysfs"):
+                        with mount("tmpfs", f"{rootdir}/run", mtype="tmpfs"):
                             dirs = [f"{rootdir}/run/lock", f"{rootdir}/run/shm"]
                             run(["mkdir", "-p"] + dirs)
                             yield
 
 
-def chroot(rootdir, cmd):
+def chroot(rootdir: str, cmd: list[str]) -> subprocess.CompletedProcess[bytes]:
     cmd = ["chroot", rootdir] + cmd
     return run(cmd)
 
 
 @contextmanager
-def image_fully_mounted(image):
+def image_fully_mounted(image: str) -> Generator[str, None, None]:
     with tempfile.TemporaryDirectory(dir=os.getcwd()) as rootdir:
         with loopback_setup(image) as loop:
             with mount(f"{loop}p2", rootdir):

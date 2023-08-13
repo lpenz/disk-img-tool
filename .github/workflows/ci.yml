@@ -11,7 +11,6 @@ jobs:
     uses: lpenz/ghworkflow-python/.github/workflows/python.yml@v0.3.2
     with:
       coveralls: true
-      mypy: false
       docs: false
       publish_pypi: true
       publish_github_release: true

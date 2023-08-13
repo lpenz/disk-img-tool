@@ -2,6 +2,8 @@
 # This file is subject to the terms and conditions defined in
 # file 'LICENSE', which is part of this source code package.
 
+# type: ignore
+
 import os
 import tempfile
 import unittest
