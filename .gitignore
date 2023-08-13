@@ -1,3 +1,4 @@
 /dist/
 /venv/
 /disk_img_tool.egg-info/
+_*
