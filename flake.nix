@@ -14,7 +14,7 @@
         pkgs = nixpkgs.legacyPackages."${system}";
         disk-img-tool = pkgs.python3Packages.buildPythonApplication {
           pname = "disk-img-tool";
-          version = "0.1.0";
+          version = "0.1.1";
           src = self;
         };
       in
