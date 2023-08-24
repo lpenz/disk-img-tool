@@ -33,7 +33,6 @@ def cmd_get(args):
     srcrel = args.source.lstrip("/")
     with image_fully_mounted(args.image) as rootdir:
         srcfull = os.path.join(rootdir, srcrel)
-        print(f"{srcfull}, {args.destination.name}")
         with open(srcfull, "rb") as fd:
             log().info(f"Getting /{srcrel} from image as {args.destination.name}")
             shutil.copyfileobj(fd, args.destination)
