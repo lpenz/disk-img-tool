@@ -10,6 +10,68 @@
 into raw disk images, including Raspberry Pi OS release.
 
 
+## Example usage
+
+For the sake of having an example, we can download one of the
+installation images from the
+[Raspbery Pi download page](https://www.raspberrypi.com/software/operating-systems)
+and decompress it with `xz -d raspios-bullseye-arm64.img.xz`. That
+leaves us with a *raspios-bullseye-arm64.img* file that we can then
+use with the commands below.
+
+Note: most of these need *sudo* to work due to the need to *mount*
+directories. We can use the `-v` flag before the image name to ask the
+tool to print all commands used.
+
+- List files in the image's inner filesystem:
+  ```sh
+  $ sudo disk-img-tool raspio-bullseye-arm64.img list
+        661      4 -rw-r--r--   1 root     root           12 May  3 03:53 ./etc/hostname
+  ...
+  ```
+- "Enter" the image - i.e. mount its filesystem, chroot to it and start a shell:
+  ```
+  $ sudo disk-img-tool -v raspio-bullseye-arm64.img enter
+  diskimgtool: + kpartx -a -v raspio-bullseye-arm64.img
+  diskimgtool:   add map loop0p1 (254:0): 0 524288 linear 7:0 8192
+  diskimgtool:   add map loop0p2 (254:1): 0 3571712 linear 7:0 532480
+  diskimgtool: + mount -t auto /dev/mapper/loop0p2 $PWD/tmp1vxc8gvg
+  diskimgtool: + mount -t auto /dev/mapper/loop0p1 $PWD/tmp1vxc8gvg/boot
+  diskimgtool: + mount -t devtmpfs dev $PWD/tmp1vxc8gvg/dev
+  diskimgtool: + mount -t devpts devpts $PWD/tmp1vxc8gvg/dev/pts
+  diskimgtool: + mount -t tmpfs tmpfs $PWD/tmp1vxc8gvg/dev/shm
+  diskimgtool: + mount -t proc proc $PWD/tmp1vxc8gvg/proc
+  diskimgtool: + mount -t sysfs sysfs $PWD/tmp1vxc8gvg/sys
+  diskimgtool: + mount -t tmpfs tmpfs $PWD/tmp1vxc8gvg/run
+  diskimgtool: + mkdir -p $PWD/tmp1vxc8gvg/run/lock $PWD/tmp1vxc8gvg/run/shm
+  diskimgtool: + chroot $PWD/tmp1vxc8gvg /bin/bash -i
+  root@raspberrypi:/#
+  ```
+  (depends on proper qemu configuration)
+- Get a file from the image's inner filesystem:
+  ```
+  $ sudo disk-img-tool -v raspio-bullseye-arm64.img get /etc/hostname hostname
+  diskimgtool: + kpartx -a -v raspio-bullseye-arm64.img
+  diskimgtool:   add map loop0p1 (254:0): 0 524288 linear 7:0 8192
+  diskimgtool:   add map loop0p2 (254:1): 0 3571712 linear 7:0 532480
+  diskimgtool: + mount -t auto /dev/mapper/loop0p2 $PWD/tmp6e21wrf3
+  diskimgtool: + mount -t auto /dev/mapper/loop0p1 $PWD/tmp6e21wrf3/boot
+  diskimgtool: Getting /etc/hostname from image as hostname
+  diskimgtool: + umount $PWD/tmp6e21wrf3/boot
+  diskimgtool: + umount $PWD/tmp6e21wrf3
+  diskimgtool: + kpartx -d raspio-bullseye-arm64.img
+  diskimgtool: + sync
+  ```
+- Put a file in the image's inner filesystem:
+  ```
+  $ sudo disk-img-tool -v raspio-bullseye-arm64.img put custom.toml /boot/
+  ```
+
+The `custom.toml` file above can actually be used to pre-configure the
+Raspberry Pi installation image with a username (instead of the defaul
+*rpi*), password, public ssh keys, and set up the wlan and locales.
+
+
 ## Installation
 
 
