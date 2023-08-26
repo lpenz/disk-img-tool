@@ -10,7 +10,28 @@
 into raw disk images, including Raspberry Pi OS release.
 
 
-## Example usage
+## Usage
+
+- `disk-img-tool [-v] *image* list`
+
+  List all files in image
+
+- `disk-img-tool [-v] *image* enter`
+
+  Start a shell inside the image
+
+- `disk-img-tool [-v] *image* get *source* *dest*`
+
+  Get a file *source* from the image and write it to *dest* in the
+  outer filesystem.
+
+- `disk-img-tool [-v] *image* put *source* *dest*`
+
+  Put a file *source* from the outer filesystem into the image,
+  writing it to the path *dest*.
+
+
+## Examples
 
 For the sake of having an example, we can download one of the
 installation images from the
