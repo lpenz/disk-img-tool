@@ -1,4 +1,5 @@
 [![CI](https://github.com/lpenz/disk-img-tool/actions/workflows/ci.yml/badge.svg)](https://github.com/lpenz/disk-img-tool/actions/workflows/ci.yml)
+[![docs](https://readthedocs.org/projects/disk-img-tool/badge/?version=stable)](https://disk-img-tool.readthedocs.io/en/stable/?badge=stable)
 [![coveralls](https://coveralls.io/repos/github/lpenz/disk-img-tool/badge.svg?branch=main)](https://coveralls.io/github/lpenz/disk-img-tool?branch=main)
 [![PyPI](https://img.shields.io/pypi/v/disk-img-tool)](https://pypi.org/project/disk-img-tool/)
 [![github](https://img.shields.io/github/v/release/lpenz/disk-img-tool?logo=github)](https://github.com/lpenz/disk-img-tool/releases)
@@ -100,7 +101,7 @@ Raspberry Pi installation image with a username (instead of the defaul
 
 disk-img-tool can be installed via [pypi]:
 
-```.sh
+```
 pip install disk-img-tool
 ```
 
