@@ -154,7 +154,7 @@ disk-img-tool uses the standard python3 infra. To develop and test the module:
   ```
 - To generate the documentaion:
   ```
-  pip install -e '.[doc]'
+  pip install -r docs/requirements.txt
   sphinx-build -b html docs/ _docs
   ```
   And open *_docs/index.html* in a browser.
