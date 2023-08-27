@@ -8,7 +8,8 @@
 # disk-img-tool
 
 **disk-img-tool** can be used to resize, list/get/put files and shell
-into raw disk images, including Raspberry Pi OS release.
+into raw disk images, including Raspberry Pi OS release and other
+Linux releases.
 
 
 ## Usage
@@ -32,7 +33,7 @@ into raw disk images, including Raspberry Pi OS release.
   writing it to the path *dest*.
 
 
-## Examples
+## Examples using the Raspberry Pi OS image
 
 For the sake of having an example, we can download one of the
 installation images from the
@@ -40,6 +41,11 @@ installation images from the
 and decompress it with `xz -d raspios-bullseye-arm64.img.xz`. That
 leaves us with a *raspios-bullseye-arm64.img* file that we can then
 use with the commands below.
+
+In fact, the Raspberry Pi OS supports the injection of a `custom.toml`
+file into its installation media which allows us to define the
+hostname, initial user with ssh public keys, wlan configuration,
+etc. Here's a sample with more documentation: [`custom.toml`]
 
 Note: most of these need *sudo* to work due to the need to *mount*
 directories. We can use the `-v` flag before the image name to ask the
@@ -88,10 +94,6 @@ tool to print all commands used.
   ```
   $ sudo disk-img-tool -v raspio-bullseye-arm64.img put custom.toml /boot/
   ```
-
-The `custom.toml` file above can actually be used to pre-configure the
-Raspberry Pi installation image with a username (instead of the defaul
-*rpi*), password, public ssh keys, and set up the wlan and locales.
 
 
 ## Installation
@@ -169,3 +171,4 @@ disk-img-tool uses the standard python3 infra. To develop and test the module:
 [nix]: https://nixos.org/
 [flake]: https://nixos.wiki/wiki/Flakes
 [`venv`]: https://docs.python.org/3/library/venv.html
+[`custom.toml`]: https://gist.github.com/lpenz/ef21bb38a7aa12ebde17fa719a8546b5
